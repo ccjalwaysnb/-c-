@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
 
-namespace 再度复习
+namespace 小测试
 {
     class monster
     {
@@ -30,25 +26,20 @@ namespace 再度复习
         public float hp;
         public float atk;
         public float df;
-        public int career;
-        public hero(string a,float b,float c,float d,int e)
+        public int ab;
+        public hero(string a, float b, float c, float d, int e)
         {
             name = a;
             hp = b;
             atk = c;
             df = d;
-            this.career= e;
+            this.ab = e;
         }
+
     }
     class Attackion
     {
-        public void Madenew(hero a, monster b)
-        {
-            hero x = new hero("1", 1, 1, 1, 1);
-            x = a;
-            monster y = new monster("1", 1, 1, 1);
-            y = b;
-        }
+
         public float damage(hero x, monster y)
         {
             if (x.atk - y.df < 0)
@@ -192,9 +183,47 @@ namespace 再度复习
             }
             //remenber when archer had chooses nattacking,you should reset archer's atk
         }
-
+        public static void logic(hero a, monster b)
+        {
+            Attackion aaa = new Attackion();
+            hero x = new hero(a.name, a.hp, a.atk, a.df, a.ab);
+            monster y = new monster(b.name, b.hp, b.atk, b.df);
+            int sf = 3;
+            while (true)
+            {
+                switch (sf)
+                {
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        while (true)
+                        {
+                            Console.WriteLine("what is your decision,normal attacting(chooses 1) or skill(chooses 2)?");
+                            string choses = Console.ReadLine();
+                            if (choses != "1" && choses != "2")
+                            {
+                                Console.WriteLine("重新输入");
+                            }
+                            else if (choses == "1")
+                            {
+                                aaa.nattacking(x, y);
+                                sf = aaa.nattacking(x, y);
+                                break;
+                            }
+                            else if (choses == "2")
+                            {
+                                aaa.wskill(x, y);
+                                sf = aaa.wskill(x, y);
+                                break;
+                            }
+                        }
+                        break;
+                }
+            }
+        }
     }
-
     class program
     {
         static void Main()
@@ -204,7 +233,7 @@ namespace 再度复习
             Console.WriteLine("名字输入");
             string name = Console.ReadLine();
             Console.WriteLine("选择职业，1：战士     2：射手");
-            hero player = new hero(name,0,0,0,0);
+            hero player = new hero(name, 0, 0, 0, 0);
             while (true)
             {
                 string choses = Console.ReadLine();
@@ -214,12 +243,12 @@ namespace 再度复习
                 }
                 else if (choses == "1")
                 {
-                    player =new hero(name, 100, 15, 10,1);
+                    player = new hero(name, 100, 15, 10, 1);
                     break;
                 }
                 else if (choses == "2")
                 {
-                    player=new hero(name, 100, 10, 5,2);
+                    player = new hero(name, 100, 10, 5, 2);
                     break;
                 }
             }
@@ -228,4 +257,3 @@ namespace 再度复习
         }
     }
 }
-

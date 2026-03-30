@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace 小测试
 {
-    class monster
+    class monster//make diffrent monster
     {
         public string name;
         public float hp;
@@ -20,7 +22,7 @@ namespace 小测试
             this.df = df;
         }
     }
-    class hero
+    class hero//make player
     {
         public string name;
         public float hp;
@@ -39,8 +41,8 @@ namespace 小测试
     }
     class Attackion
     {
-
-        public float damage(hero x, monster y)
+        int sf = 3;
+        public float damage(hero x, monster y)//伤害计算
         {
             if (x.atk - y.df < 0)
             {
@@ -48,7 +50,7 @@ namespace 小测试
             }
             return x.atk - y.df;
         }
-        public float redamage(hero x, monster y)
+        public float redamage(hero x, monster y)//受伤计算
         {
             if (y.atk - x.df < 0)
             {
@@ -56,7 +58,7 @@ namespace 小测试
             }
             return y.atk - x.df;
         }
-        public int nattacking(hero x, monster y)//普通攻击
+        public void nattacking(hero x, monster y)//普通攻击
         {
             y.hp -= damage(x, y);
             x.hp -= redamage(x, y);
@@ -66,7 +68,7 @@ namespace 小测试
                 Console.ReadKey();
                 Console.WriteLine("loser");
                 Console.ReadKey();
-                return 2;
+                sf= 2;
             }
             else if (x.hp > 0 && y.hp <= 0)
             {
@@ -74,7 +76,7 @@ namespace 小测试
                 Console.ReadKey();
                 Console.WriteLine("winner");
                 Console.ReadKey();
-                return 1;
+                sf= 1;
             }
             else if (x.hp <= 0 && y.hp > 0)
             {
@@ -82,7 +84,7 @@ namespace 小测试
                 Console.ReadKey();
                 Console.WriteLine("loser");
                 Console.ReadKey();
-                return 2;
+                sf= 2;
             }
             else
             {
@@ -90,11 +92,11 @@ namespace 小测试
                 Console.ReadKey();
                 Console.WriteLine("keep on");
                 Console.ReadKey();
-                return 3;
+                sf= 3;
             }
 
         }
-        public int wskill(hero x, monster y)
+        public void wskill(hero x, monster y)//盾技
         {
             x.atk = x.atk / 2;
             x.df = x.df * 2;
@@ -123,7 +125,7 @@ namespace 小测试
                 Console.WriteLine("loser"); Console.ReadKey();
                 x.atk = x.atk * 2;
                 x.df = x.df / 2;
-                return 2;
+                sf= 2;
             }
             else if (x.hp > 0 && y.hp <= 0)
             {
@@ -131,7 +133,7 @@ namespace 小测试
                 Console.WriteLine("winner"); Console.ReadKey();
                 x.atk = x.atk * 2;
                 x.df = x.df / 2;
-                return 1;
+                sf= 1;
             }
             else if (x.hp <= 0 && y.hp > 0)
             {
@@ -140,7 +142,7 @@ namespace 小测试
                 Console.WriteLine("loser"); Console.ReadKey();
                 x.atk = x.atk * 2;
                 x.df = x.df / 2;
-                return 2;
+                sf= 2;
             }
             else
             {
@@ -149,10 +151,10 @@ namespace 小测试
                 Console.WriteLine("keep on"); Console.ReadKey();
                 x.atk = x.atk * 2;
                 x.df = x.df / 2;
-                return 3;
+                sf= 3;
             }
         }
-        public int askill(hero x, monster y)
+        public void askill(hero x, monster y)//弓技
         {
             x.atk = 2 * x.atk;
             x.hp -= redamage(x, y);
@@ -166,7 +168,7 @@ namespace 小测试
                 Console.ReadKey();
                 Console.WriteLine("loser");
                 Console.ReadKey();
-                return 2;
+                sf= 2;
             }
             else
             {
@@ -179,22 +181,30 @@ namespace 小测试
                     Console.WriteLine("keep on");
                     Console.ReadKey();
                 }
-                return 3;
+                sf= 3;
             }
             //remenber when archer had chooses nattacking,you should reset archer's atk
         }
-        public static void logic(hero a, monster b)
+        public static void logic(hero a,monster b)
         {
             Attackion aaa = new Attackion();
             hero x = new hero(a.name, a.hp, a.atk, a.df, a.ab);
             monster y = new monster(b.name, b.hp, b.atk, b.df);
+            Action<hero, monster> skill;
+            if (x.ab==1)
+            {
+                skill = aaa.wskill;
+            }
+            else
+            {
+                skill = aaa.askill;
+            }
             int sf = 3;
             while (true)
             {
                 switch (sf)
                 {
                     case 1:
-                        break;
                     case 2:
                         break;
                     case 3:
@@ -209,13 +219,11 @@ namespace 小测试
                             else if (choses == "1")
                             {
                                 aaa.nattacking(x, y);
-                                sf = aaa.nattacking(x, y);
                                 break;
                             }
                             else if (choses == "2")
                             {
-                                aaa.wskill(x, y);
-                                sf = aaa.wskill(x, y);
+                                skill(x,y);
                                 break;
                             }
                         }
@@ -252,7 +260,7 @@ namespace 小测试
                     break;
                 }
             }
-
+            Attackion.logic(player, GPT);
 
         }
     }

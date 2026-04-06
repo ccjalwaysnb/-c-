@@ -10,7 +10,7 @@ namespace 逻辑训练3_记账本
 {
     class Function
     {
-        public static int choose(string a, int b, int c)
+        public static int choose(string a,int b,int c)
         {
             int d;
             if (int.TryParse(a, out d))
@@ -107,12 +107,12 @@ namespace 逻辑训练3_记账本
         {
             decimal x = 0;
             decimal y = 0;
-            int i = inmoney.Count + outmoney.Count;
-            foreach (decimal a in inmoney)
+            int i=inmoney.Count+outmoney.Count;
+            foreach(decimal a in inmoney)
             {
                 x += a;
             }
-            foreach (decimal b in outmoney)
+            foreach(decimal b in outmoney)
             {
                 y += b;
             }
@@ -153,7 +153,7 @@ namespace 逻辑训练3_记账本
                 Console.WriteLine("输入数字2并按下回车键，即可立刻总结当前花销");
                 Console.WriteLine("输入数字3并按下回车键，即可直接开始总结今日的收支");
                 int pd = Function.choose(Console.ReadLine(), 1, 3);
-                switch (pd)
+                switch(pd)
                 {
                     case 0:
                         {
@@ -164,8 +164,8 @@ namespace 逻辑训练3_记账本
                         {
                             Console.WriteLine("请问你想记录入账还是花销");
                             Console.WriteLine("记录入账请输入数字1并回车，记录花销请输入数字2并回车");
-                            int ch = Function.choose(Console.ReadLine(), 1, 2);
-                            switch (ch)
+                            int ch=Function.choose(Console.ReadLine(),1, 2);
+                            switch(ch)
                             {
                                 case 0:
                                     {
@@ -187,8 +187,8 @@ namespace 逻辑训练3_记账本
                         }
                     case 2:
                         {
-                            Function.summarize(inmoney, outmoney, inreason, outreason);
-                            break;
+                            Function.summarize(inmoney,outmoney,inreason,outreason);
+                            break ;
                         }
                     case 3:
                         {

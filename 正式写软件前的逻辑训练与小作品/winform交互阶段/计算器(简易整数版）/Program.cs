@@ -16,6 +16,8 @@ namespace 计算器
         int logic1=0;//第一个数字，初始化为零
         string Fuhao=null;//符号，初始化为null
         char[] fuhao = { '+', '-', '×', '÷' };//数组，用来建立符号按键，这是直接显示text的
+        bool judge1 = false;//！judge1代表第二个数为空
+        bool judge2 = false;//!judge2代表符号为空
         public void buttoncre(char[] d)
         {
             for (int i = 0;i<9; i++)//九宫格数字按键
@@ -27,7 +29,7 @@ namespace 计算器
                 c.Location = new Point(100+50*a, 50*b+100);
                 c.Text=(i+1).ToString();
                 c.Tag=i+1;
-                c.Click += showing;
+                c.Click += showingg;
                 this.Controls.Add(c);
             }
             for (int i = 0; i<fuhao.Length; i++)//符号按键
@@ -43,24 +45,24 @@ namespace 计算器
                     case "×":c.Tag = "*";break;
                     case "÷":c.Tag= "/";break;
                 }
-                c.Click += showing;
+                c.Click += showingg;
                 this.Controls.Add(c);
                 Button ling= new Button();
                 ling.Size = new Size(50, 50);
                 ling.Location=new Point(150, 250);
                 ling.Text = "0";
                 ling.Tag="0";
-                ling.Click += showing;
+                ling.Click += showingg;
                 this.Controls.Add (ling);//加入0按键
             }
         }
-        void showing(object sender, EventArgs e)//修改展示的东西
+        void showingg(object sender, EventArgs e)
         {
-            Button x=(Button)sender;
+            Button x = (Button)sender;
             int num = 0;
-            if (logic2 == 0)//假如第二个数字为零（本来初始化为0）
+            if (!judge1)//第二个数还没变过
             {
-                if (Fuhao == null)//并且符号也为null，即没有输入过
+                if (!judge2)//并且符号也没有输入过
                 {
                     if (int.TryParse(x.Text, out num))//假如用户输入的按键为数字
                     {
@@ -77,6 +79,7 @@ namespace 计算器
                         {
                             Fuhao = x.Tag.ToString();//在计算逻辑里面添入符号
                             showthing += x.Text;//显示器增添符号
+                            judge2 = true;//现在符号存在了
                         }
                     }
 
@@ -87,6 +90,7 @@ namespace 计算器
                     {
                         logic2 = logic2 * 10 + num;//逻辑里面开始增添第二个数字的改动
                         showthing += logic2.ToString();//直接吧改动后的第二个数字增添进显示器
+                        judge1 = true;//现在数字二改过了
                     }
                     else                              //如果输入的是符号
                     {
@@ -95,58 +99,59 @@ namespace 计算器
                     }
                 }
             }
-            else//假如第二个数字不为零，即可理解为修改过了
+            else//假如第二个数字修改过了
             {
-                if(int.TryParse(x.Text,out num))//如果输入的是数字
+                if (int.TryParse(x.Text, out num))//如果输入的是数字
                 {
-                    logic2 = logic2 * 10 + num;//直接修改数字二，在逻辑里面
-                    showthing += x.Text;//显示器修改环节
+                    if (logic2 == 0)
+                    {
+                        logic2 = logic2 * 10 + num;//直接修改数字二，在逻辑里面
+                        showthing =logic1.ToString()+Fuhao+ x.Text;//显示器修改环节
+                    }
+                    else
+                    {
+                        logic2 = logic2 * 10 + num;//直接修改数字二，在逻辑里面
+                        showthing += x.Text;//显示器修改环节
+                    }
                 }
                 else//如果输入的是符号
                 {
                     jisuan();//直接当作连续运算，直接把一开始的算式解出答案，并且让数字一为结果
                     logic2 = 0;//把逻辑里面的数字二重新初始化
-                    showthing=logic1.ToString()+x.Text;//运算之后的结果自动设定为数字一，所以直接显示数字一和加上去的符号
-                    Fuhao=x.Tag.ToString();//逻辑里面的符号更新为新输入的
+                    showthing = logic1.ToString() + x.Text;//运算之后的结果自动设定为数字一，所以直接显示数字一和加上去的符号
+                    Fuhao = x.Tag.ToString();//逻辑里面的符号更新为新输入的
+                    judge1 = false;//现在数字二没改过了
+                    judge2 = true;
                 }
             }
             caption1.Text = showthing;//让显示起作用
         }
-
         void conting(object sender, KeyEventArgs e)//点击键盘按键之后的逻辑
         {
-            if (e.KeyCode == Keys.O)//如果是回车键
+            if (e.KeyCode == Keys.O)//如果是o键
             {
-                if (logic2 == 0)//假如数字二为零，当作数字二不存在，暂定算式非法
+                if (!judge2)//假如符号不存在
                 {
-                    if(Fuhao==null)//并且符号不存在
-                    {
                         showthing= logic1.ToString();//直接展示数字一就行了，不进行运算
-                    }
-                    else//符号存在
-                    {
-                        if (Fuhao == "/")//假如符号为除号，按照特性直接报错
-                        {
-                            MessageBox.Show("禁止除0");
-                        }
-                        else //符号不为除号的话直接当作合法算式计算就行了
-                        {
-                            jisuan();//进行计算
-                            showthing = logic1.ToString();//显示运算结果
-                        }
-                    }
                 }
-                else//假如数字二也存在,算式合法时
+                else//假如符号存在
                 {
-                    jisuan();//进行计算
-                    showthing = logic1.ToString();//显示运算结果
+                    if (Fuhao == "/"&&logic2==0)//假如符号为除号，并且数字二为零
+                    {
+                        MessageBox.Show("禁止除0");
+                    }
+                    else //符号不为除号的话直接当作合法算式计算就行了
+                    {
+                        jisuan();//进行计算
+                        showthing = logic1.ToString();//显示运算结果
+                    }
                 }
             }
             else if (e.KeyCode == Keys.Back)//如果是回退键
             {
-                if (logic2 == 0)//通过假设数字二为零来判断数字二是否为初始化
+                if (!judge1)//数字二为空时
                 {
-                    if (Fuhao == null)//并且符号也没有
+                    if (!judge2)//并且符号也没有
                     {
                         if(logic1==0)//再假如数字一也为零
                         {
@@ -162,12 +167,17 @@ namespace 计算器
                     {
                         Fuhao = null;//逻辑里面直接消除符号
                         showthing = logic1.ToString();//为了避免数字二真的为零而不是初始化，直接强制只显示数字一
+                        judge2 = false;//初始化符号判断
                     }
                 }
                 else//如果数字二存在
                 {
                     logic2 = logic2 / 10;//走特性，逻辑
                     showthing = showthing.Substring(0, showthing.Length - 1);//展示一下回退
+                    if (logic2==0)//假如数字二扣完之后为零了
+                    {
+                        judge1 = false;//直接判断数字二不存在
+                    }
                 }
 
             }
@@ -184,6 +194,8 @@ namespace 计算器
                 }
             logic2 = 0;//因为运算答案为数字一以方便继续使用，所以初始化数字二
             Fuhao = null;//初始化符号
+            judge1=false;
+            judge2 =false;//两个判断恢复
             }
         public Myform()
         {

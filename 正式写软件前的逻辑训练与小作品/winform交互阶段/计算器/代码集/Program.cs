@@ -14,10 +14,26 @@ namespace 计算器
         string showthing="";//定义运行后应该显示的东西
         int logic2=0;//第二个数字，初始化为零
         int logic1=0;//第一个数字，初始化为零
+        int logic3 = 0;//第三个数字初始化建立用于简便连续运算
         string Fuhao=null;//符号，初始化为null
+        string fh=null;//用于简便连续运算
         char[] fuhao = { '+', '-', '×', '÷' };//数组，用来建立符号按键，这是直接显示text的
         bool judge1 = false;//！judge1代表第二个数为空
         bool judge2 = false;//!judge2代表符号为空
+        bool judge3=false;//用于简便连续运算的后面几次正常运行
+        void huifu(object sender, EventArgs e)//ac键
+        {
+            judge1 = false;//！judge1代表第二个数为空
+            judge2 = false;//!judge2代表符号为空
+            judge3 = false;//用于简便连续运算的后面几次正常运行
+            logic2 = 0;//第二个数字，初始化为零
+            logic1 = 0;//第一个数字，初始化为零
+            logic3 = 0;//第三个数字初始化建立用于简便连续运算
+            Fuhao = null;//符号，初始化为null
+            fh = null;//用于简便连续运算
+            showthing = "";//定义运行后应该显示的东西
+            caption1.Text = "请通过按钮输入内容";
+        }
         public void buttoncre(char[] d)
         {
             for (int i = 0;i<9; i++)//九宫格数字按键
@@ -47,14 +63,20 @@ namespace 计算器
                 }
                 c.Click += showingg;
                 this.Controls.Add(c);
-                Button ling= new Button();
-                ling.Size = new Size(50, 50);
-                ling.Location=new Point(150, 250);
-                ling.Text = "0";
-                ling.Tag="0";
-                ling.Click += showingg;
-                this.Controls.Add (ling);//加入0按键
             }
+            Button hufu = new Button();
+            hufu.Size = new Size(50, 50);
+            hufu.Location = new Point(300, 50);
+            hufu.Text = "AC";
+            hufu.Click += huifu;
+            this.Controls.Add(hufu);
+            Button ling = new Button();
+            ling.Size = new Size(50, 50);
+            ling.Location = new Point(150, 250);
+            ling.Text = "0";
+            ling.Tag = "0";
+            ling.Click += showingg;
+            this.Controls.Add(ling);//加入0按键
         }
         void showingg(object sender, EventArgs e)
         {
@@ -124,19 +146,22 @@ namespace 计算器
                     judge2 = true;
                 }
             }
+            judge3 = false;//中断连续计算进程
             caption1.Text = showthing;//让显示起作用
         }
         void conting(object sender, KeyEventArgs e)//点击键盘按键之后的逻辑
         {
             if (e.KeyCode == Keys.O)//如果是o键
             {
-                if (!judge2)//假如符号不存在
+                if (!judge2||!judge1)//假如符号不存在或者数字二不存在
                 {
-                        showthing= logic1.ToString();//直接展示数字一就行了，不进行运算
+                    showthing = logic1.ToString();//直接展示数字一就行了，不进行运算
+                    Fuhao = null;
+                    judge2 = false;//直接消除符号
                 }
                 else//假如符号存在
                 {
-                    if (Fuhao == "/"&&logic2==0)//假如符号为除号，并且数字二为零
+                    if (Fuhao == "/" && logic2 == 0)//假如符号为除号，并且数字二为零
                     {
                         MessageBox.Show("禁止除0");
                     }
@@ -146,6 +171,7 @@ namespace 计算器
                         showthing = logic1.ToString();//显示运算结果
                     }
                 }
+                judge3 = false;//中断连续计算进程
             }
             else if (e.KeyCode == Keys.Back)//如果是回退键
             {
@@ -153,15 +179,15 @@ namespace 计算器
                 {
                     if (!judge2)//并且符号也没有
                     {
-                        if(logic1==0)//再假如数字一也为零
-                        {
-                            showthing = logic1.ToString() ;
-                        }
-                        else//如果数字一不为零
-                        {
                             logic1 = logic1 / 10;//通过int的特性，逻辑里面也实现回退一位
-                            showthing = showthing.Substring(0, showthing.Length - 1);//展示回退一位
-                        }
+                            if (logic1 == 0)//假如数字一为零
+                            {
+                                showthing = logic1.ToString();
+                            }
+                            else
+                            {
+                                showthing = showthing.Substring(0, showthing.Length - 1);//展示回退一位
+                            }
                     }
                     else//如果有符号
                     {
@@ -174,29 +200,79 @@ namespace 计算器
                 {
                     logic2 = logic2 / 10;//走特性，逻辑
                     showthing = showthing.Substring(0, showthing.Length - 1);//展示一下回退
-                    if (logic2==0)//假如数字二扣完之后为零了
+                    if (logic2 == 0)//假如数字二扣完之后为零了
                     {
                         judge1 = false;//直接判断数字二不存在
                     }
                 }
-
+                judge3= false;//中断连续计算进程
+            }
+            else if (e.KeyCode == Keys.L)//设L键为简便连续计算键
+            {
+                if (judge3)//如果进行过一次连续运算了
+                {
+                    continuous();
+                    showthing = logic1.ToString();//直接展示数字一就行了，不进行运算
+                }
+                else//假如没进行过，则开始正常运算一次
+                {
+                    if (!judge2||!judge1)//假如符号不存在或者数字二不存在
+                    {
+                        showthing = logic1.ToString();//直接展示数字一就行了，不进行运算
+                        Fuhao=null;
+                        judge2=false;//直接消除符号
+                    }
+                    else//假如符号存在
+                    {
+                        if (Fuhao == "/" && logic2 == 0)//假如符号为除号，并且数字二为零
+                        {
+                            MessageBox.Show("禁止除0");
+                        }
+                        else //符号不为除号的话直接当作合法算式计算就行了
+                        {
+                            continuous();//进行计算
+                            showthing = logic1.ToString();//显示运算结果
+                        }
+                    }
+                }
             }
             caption1.Text = showthing;//让显示起作用
         }
-            void jisuan()//计算逻辑
+        void jisuan()//计算逻辑
+        {
+            switch (Fuhao)//通过符号来判断运算种类
             {
-                switch (Fuhao)//通过符号来判断运算种类
-                {
-                case "+": logic1 = logic1 + logic2; break;
-                case "-": logic1 = logic1 - logic2; break;
-                case "*": logic1 = logic1 * logic2; break;
-                case "/":logic1 = logic1 / logic2; break;
-                }
-            logic2 = 0;//因为运算答案为数字一以方便继续使用，所以初始化数字二
-            Fuhao = null;//初始化符号
-            judge1=false;
-            judge2 =false;//两个判断恢复
+            case "+": logic1 = logic1 + logic2; break;
+            case "-": logic1 = logic1 - logic2; break;
+            case "*": logic1 = logic1 * logic2; break;
+            case "/":logic1 = logic1 / logic2; break;
             }
+        logic2 = 0;//因为运算答案为数字一以方便继续使用，所以初始化数字二
+        Fuhao = null;//初始化符号
+        judge1=false;
+        judge2 =false;//两个判断恢复
+        }
+        void continuous()//连续计算逻辑
+        {
+            if (!judge3)//假如是第一次进行连续运算，则初始化所有用于正常计算的东西，随后记录为已经连续运算过一次了
+            {
+                fh = Fuhao;
+                logic3 = logic2;
+                judge3 = true;
+                logic2 = 0;//因为运算答案为数字一以方便继续使用，所以初始化数字二
+                Fuhao = null;//初始化符号
+                judge1 = false;
+                judge2 = false;//两个判断恢复
+            }
+            switch (fh)//通过符号来判断运算种类
+            {
+                case "+": logic1 = logic1 + logic3; break;
+                case "-": logic1 = logic1 - logic3; break;
+                case "*": logic1 = logic1 * logic3; break;
+                case "/": logic1 = logic1 / logic3; break;
+            }
+
+        }
         public Myform()
         {
             Size = new Size(600,400);

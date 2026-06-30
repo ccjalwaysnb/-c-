@@ -23,7 +23,7 @@ namespace u盘音乐播放器
         bool tp = false;//暂停与否
         #region 确定播放的歌曲是哪一个，已经规定了范围了，也做了随机播放数方法，里面还初始化了焦点，还有播放模式模式
         private int _order;
-        int lastorder;
+        int lastorder;//判断此前是否播放过一首歌
         bool lastset=false;
         int order
         {
@@ -128,9 +128,9 @@ namespace u盘音乐播放器
             title.Content = "正在更新列表当中......";
             oncelabel.Content = "刷新中";
             timer.Stop();
-            await cache(@"E:\个人听歌\MusicCollection\Anothermusic", anothermusician);
-            await cache(@"E:\个人听歌\MusicCollection\Awakemusic", awakemusician);
-            await cache(@"E:\个人听歌\MusicCollection\Highmusic", highmusician);
+            await _cache(@"E:\个人听歌\MusicCollection\Anothermusic", anothermusician);
+            await _cache(@"E:\个人听歌\MusicCollection\Awakemusic", awakemusician);
+            await _cache(@"E:\个人听歌\MusicCollection\Highmusic", highmusician);
             allmusician.AddRange(awakemusician);
             allmusician.AddRange(highmusician);
             allmusician.AddRange(anothermusician);
@@ -148,7 +148,7 @@ namespace u盘音乐播放器
                 list.Items.Add(item.name);
             }
         }
-        async Task cache(string place, List<musiccache> musician_)//缓存数据用————输入（@+音乐文件地址，对应的list缓存列表），会自动检索文件夹内音乐缓存进列表，记得调用前加给await异步
+        async Task _cache(string place, List<musiccache> musician_)//缓存数据用————输入（@+音乐文件地址，对应的list缓存列表），会自动检索文件夹内音乐缓存进列表，记得调用前加给await异步
         {
             string[] musicianpath_ = Directory.GetFiles(place);
             foreach (string item in musicianpath_)
@@ -292,15 +292,16 @@ namespace u盘音乐播放器
         }
         private void Button_Click_7(object sender, RoutedEventArgs e)
         {
-            player.Source = null;
-            allmusician.Clear();
-            awakemusician.Clear();
-            highmusician.Clear();
-            anothermusician.Clear();
-            _ = cache();
-            focus = false;
-            tp = true;
-            stsp.Content = "暂停";
+            MessageBox.Show("记住这里有bug，有时间回来修");
+            //player.Source = null;
+            //allmusician.Clear();
+            //awakemusician.Clear();
+            //highmusician.Clear();
+            //anothermusician.Clear();
+            //_ = cache();
+            //focus = false;
+            //tp = true;
+            //stsp.Content = "暂停";
         }
         private void stsp_Click(object sender, RoutedEventArgs e)
         {
